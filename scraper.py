@@ -53,13 +53,13 @@ def scrape(date):
 
     date = date.replace('/', '-')
     try:
-        os.mkdir("res/" + date)
+        os.mkdir("crosswords/" + date)
     except:
         pass
     
     title = page_bs4.find("title")
     day = title.string.split(',', 1)[0].strip()
-    with open("res/" + date + "/day.txt", 'w') as f:
+    with open("crosswords/" + date + "/day.txt", 'w') as f:
         f.write(day)
 
     table_id = "PuzTable"
@@ -81,12 +81,12 @@ def scrape(date):
                         else:
                             board_row.append((l[1].string, num))
             board.append(board_row)
-    with open("res/" + date + "/board.csv", 'w') as f:
+    with open("crosswords/" + date + "/board.csv", 'w') as f:
         writer = csv.writer(f)
         writer.writerows(board)
 
     clues = parse_clues(page_bs4)
-    with open("res/" + date + "/clues.json", 'w') as f:
+    with open("crosswords/" + date + "/clues.json", 'w') as f:
         json.dump(clues, f)
     
     return day

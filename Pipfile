@@ -9,6 +9,9 @@ verify_ssl = true
 flask = "*"
 requests = "*"
 beautifulsoup4 = "*"
+flask-socketio = "*"
+eventlet = "*"
+sqlite3 = "*"
 
 [requires]
 python_version = "3.6"
