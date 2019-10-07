@@ -8,7 +8,6 @@ import requests
 
 from src import *
 from src.models.square.square import Square
-from src.models.board.board import Board
 
 
 @app.route('/')
@@ -22,8 +21,6 @@ def index():
         for entry in row:
             if entry and entry[0] == '(':
                 entry = literal_eval(entry)
-                # ('J', '15')
-
                 square = Square(entry[0], int(entry[1]))
             else:
                 square = Square(entry)

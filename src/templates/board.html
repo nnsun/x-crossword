@@ -3,28 +3,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta charset="utf-8" />
-    <title>X-Crossword</title>
+  <meta charset="utf-8" />
+  <title>X-Crossword</title>
+  <link rel="stylesheet" type="text/css" href="../static/site.css"/>
 </head>
 
 <body>
-    <div>
-
-        <table>
-            {% for row in board %}
-                <tr>
-                {% for square in row %}
-                    <td>{{square.num}}</td>
-                {% endfor %}
-                </tr>
-            {% endfor %}
-            <!-- <tr>
-                <td>W</td>
-                <td>H</td>
-            </tr> -->
-
-        </table>
-    </div>
+  <div>
+    <table>
+      <tbody>
+        {% for row in board %}
+          <tr>
+          {% for square in row %}
+            {% if square.is_black %}
+              <td class=black-square>
+            {% else %}
+              <td>
+            {% endif %}
+                <div class=num>{{square.num}}</div>
+                <div class=letter>A</div>
+              </td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
 
 </body>

@@ -1,5 +1,5 @@
 class Square(object):
-    def __init__(self, answer, num=None):
+    def __init__(self, answer, num=''):
         if answer:
             self.is_black = False
         else:
@@ -8,5 +8,3 @@ class Square(object):
         self.answer = answer
         self.check = 0
         self.guess = None
-
-
