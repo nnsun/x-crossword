@@ -19,17 +19,32 @@
               <td class=black-square>
             {% else %}
               <td>
-            {% endif %}
                 <div class=num>{{square.num}}</div>
-                <div class=letter>A</div>
+                <div class=letter contenteditable></div>
+            {% endif %}
               </td>
           {% endfor %}
           </tr>
         {% endfor %}
       </tbody>
     </table>
-  </div>
 
+    <div id="clues-container">
+      <div class="clue-col">
+        <h2>Across</h2>
+        {% for num in clues["across"] %}
+          <div>{{num}}. {{clues["across"][num]}}</div>
+        {% endfor %}
+      </div>
+      <div class="clue-col">
+        <h2>Down</h2>
+        {% for num in clues["down"] %}
+          <div>{{num}}. {{clues["down"][num]}}</div>
+        {% endfor %}
+      </div>
+    </div>
+    
+  </div>
 
 </body>
 
