@@ -1,5 +1,6 @@
 from os import environ
-from src import app
+from src import app, socketio
+
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app, debug=True)

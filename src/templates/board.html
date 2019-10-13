@@ -1,11 +1,14 @@
 
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns='http://www.w3.org/1999/xhtml'>
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset='utf-8' />
   <title>X-Crossword</title>
-  <link rel="stylesheet" type="text/css" href="../static/site.css"/>
+  <link rel='stylesheet' type='text/css' href='../static/site.css'/>
+  <script src='../static/scripts/jquery-3.4.1.min.js'></script>
+  <script src='../static/scripts/socket.io.min.js'></script>
+  <script src='../static/scripts/events.js'></script>
 </head>
 
 <body>
@@ -29,17 +32,17 @@
       </tbody>
     </table>
 
-    <div id="clues-container">
-      <div class="clue-col">
+    <div id='clues-container'>
+      <div class='clue-col'>
         <h2>Across</h2>
-        {% for num in clues["across"] %}
-          <div>{{num}}. {{clues["across"][num]}}</div>
+        {% for num in clues['across'] %}
+          <div>{{num}}. {{clues['across'][num]}}</div>
         {% endfor %}
       </div>
-      <div class="clue-col">
+      <div class='clue-col'>
         <h2>Down</h2>
-        {% for num in clues["down"] %}
-          <div>{{num}}. {{clues["down"][num]}}</div>
+        {% for num in clues['down'] %}
+          <div>{{num}}. {{clues['down'][num]}}</div>
         {% endfor %}
       </div>
     </div>

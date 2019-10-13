@@ -1,12 +1,12 @@
 import json
 
 from flask import Flask
+from flask_socketio import SocketIO, join_room, emit
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__, static_folder='static')
+socketio = SocketIO(app)
 
-db = "database.db"
-
-with open("day_mapping.json", 'r') as f:
+with open('day_mapping.json', 'r') as f:
     day_mapping = json.load(f)
 
 import src.views

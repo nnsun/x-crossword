@@ -10,11 +10,11 @@ from src import *
 from src.models.square.square import Square
 
 
-date = "9-07-2019"
+date = '9-07-2019'
 
 @app.route('/')
 def index():
-    with open("crosswords/" + date + "/board.csv", 'r') as f:
+    with open('crosswords/' + date + '/board.csv', 'r') as f:
         sol_list = list(csv.reader(f))
 
     puzzle = []
@@ -29,7 +29,12 @@ def index():
             puzzle_row.append(square)
         puzzle.append(puzzle_row)
 
-    with open("crosswords/" + date + "/clues.json", 'r') as f:
+    with open('crosswords/' + date + '/clues.json', 'r') as f:
         clues = json.load(f)
 
     return render_template('board.html', board=puzzle, clues=clues)
+
+
+@socketio.on('keypress')
+def on_keypress(data):
+    print(data)
