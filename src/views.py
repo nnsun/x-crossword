@@ -11,8 +11,8 @@ from src.models.square.square import Square
 
 
 date = '9-07-2019'
-
 puzzle = None
+room = 'default'
 
 @app.route('/')
 def index():
@@ -48,10 +48,11 @@ def on_create():
             for square in row:
                 row_json.append(square.initial())
             puzzle_json.append(row_json)
-
+        
+        join_room(room)
         emit('board', json.dumps(puzzle_json))
 
 
 @socketio.on('update')
 def on_keypress(data):
-    pass
+    emit('update', json.dumps(data), room=room)

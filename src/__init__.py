@@ -1,7 +1,7 @@
 import json
 
 from flask import Flask
-from flask_socketio import SocketIO, join_room, emit
+from flask_socketio import SocketIO, join_room, emit, send
 
 app = Flask(__name__, static_folder='static')
 socketio = SocketIO(app)

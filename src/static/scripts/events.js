@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    let letterBoxes = document.getElementsByClassName('letter');
-
     let socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    let squares = [];
 
 
     socket.on('connect', function(data) {
@@ -12,10 +12,12 @@ $(document).ready(function() {
     socket.on('board', function(data) {
         let tbody = document.getElementById('crossword');
         let parsedData = JSON.parse(data);
-        console.log(typeof(data));
+
         for (let i = 0; i < parsedData.length; i++) {
             let tr = document.createElement('tr');
             tbody.appendChild(tr);
+
+            let row = [];
             for (let j = 0; j < parsedData[i].length; j++) {
                 let square = parsedData[i][j];
                 let td = document.createElement('td');
@@ -23,35 +25,35 @@ $(document).ready(function() {
                     td.setAttribute('class', 'black-square');
                 }
                 else {
-                    numDiv = document.createElement('div');
+                    let numDiv = document.createElement('div');
                     numDiv.setAttribute('class', 'num');
                     numDiv.innerHTML = square.num;
 
-                    letterDiv = document.createElement('div');
+                    let letterDiv = document.createElement('div');
                     letterDiv.setAttribute('class', 'letter');
                     letterDiv.setAttribute('data-row', i);
                     letterDiv.setAttribute('data-col', j);
+                    letterDiv.setAttribute('contenteditable', true);
+
+                    letterDiv.addEventListener('input', function (e) {
+                        socket.emit('update', {"row": letterDiv.getAttribute("data-row"), "col": letterDiv.getAttribute("data-col"), "letter": e.data});
+                    });
 
                     td.appendChild(numDiv);
                     td.appendChild(letterDiv);
                 }
+                row.push(td);
                 tr.appendChild(td);
             }
+            squares.push(row);
         }
-    })
-
-    // document.getElementById('crossword').innerHTML = s
+    });
 
 
-
-    
-    for (i = 0; i < letterBoxes.length; i++) {
-        let letterBox = letterBoxes[i];
-        letterBox.addEventListener('input', function (e) {
-            socket.emit('keypress', {"row": letterBox.getAttribute("data-row"), "col": letterBox.getAttribute("data-col"), "letter": e.data});
-        });
-    }
-
-
+    socket.on('update', function(data) {
+        let parsedData = JSON.parse(data);
+        let square = squares[parsedData.row][parsedData.col];
+        square.childNodes[1].innerHTML = parsedData.letter;
+    });
 
  });
