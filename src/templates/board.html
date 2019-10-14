@@ -14,21 +14,8 @@
 <body>
   <div>
     <table>
-      <tbody>
-        {% for row in board %}
-          <tr>
-          {% for square in row %}
-            {% if square.is_black %}
-              <td class=black-square>
-            {% else %}
-              <td>
-                <div class=num>{{square.num}}</div>
-                <div class=letter contenteditable></div>
-            {% endif %}
-              </td>
-          {% endfor %}
-          </tr>
-        {% endfor %}
+      <tbody id='crossword'>
+        <!-- inserted with JS -->
       </tbody>
     </table>
 

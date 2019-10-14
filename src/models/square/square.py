@@ -8,3 +8,9 @@ class Square(object):
         self.answer = answer
         self.check = 0
         self.guess = None
+
+    def initial(self):
+        d = {}
+        d['is_black'] = self.is_black
+        d['num'] = self.num
+        return d

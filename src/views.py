@@ -12,11 +12,14 @@ from src.models.square.square import Square
 
 date = '9-07-2019'
 
+puzzle = None
+
 @app.route('/')
 def index():
+    global puzzle
     with open('crosswords/' + date + '/board.csv', 'r') as f:
         sol_list = list(csv.reader(f))
-
+    
     puzzle = []
     for row in sol_list:
         puzzle_row = []
@@ -35,6 +38,20 @@ def index():
     return render_template('board.html', board=puzzle, clues=clues)
 
 
-@socketio.on('keypress')
+@socketio.on('create')
+def on_create():
+    global puzzle
+    if puzzle is not None:
+        puzzle_json = []
+        for row in puzzle:
+            row_json = []
+            for square in row:
+                row_json.append(square.initial())
+            puzzle_json.append(row_json)
+
+        emit('board', json.dumps(puzzle_json))
+
+
+@socketio.on('update')
 def on_keypress(data):
-    print(data)
+    pass
