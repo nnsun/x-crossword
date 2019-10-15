@@ -35,7 +35,7 @@ def index():
     with open('crosswords/' + date + '/clues.json', 'r') as f:
         clues = json.load(f)
 
-    return render_template('board.html', board=puzzle, clues=clues)
+    return render_template('index.html', board=puzzle, clues=clues)
 
 
 @socketio.on('create')
@@ -56,3 +56,13 @@ def on_create():
 @socketio.on('update')
 def on_keypress(data):
     emit('update', json.dumps(data), room=room)
+
+
+@socketio.on('check')
+def on_check(data):
+    correct = []
+    for entry in data:
+        if puzzle[int(entry['row'])][int(entry['col'])].answer == entry['letter']:
+            correct.append({'row': entry['row'], 'col': entry['col']})
+    print(correct)
+    emit('check', json.dumps(correct), room=room)

@@ -4,7 +4,7 @@ html {
 
 table {
     border-collapse: collapse;
-    background-color: rgb(240, 240, 240);
+    background-color: 240 240 240;
     float: left;
     margin-left: 10%;
 }
@@ -46,4 +46,25 @@ table, th, td {
 .black-square {
     background-color: black;
     border: 1px solid white;
+}
+
+#button-div {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+
+.correct {
+    color: blue;
+}
+
+:focus {
+    outline: none;
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+.selected {
+    background-color: yellow;
 }
