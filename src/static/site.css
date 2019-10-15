@@ -65,6 +65,10 @@ table, th, td {
     text-shadow: 0 0 0 #000;
 }
 
+.selected-group {
+    background-color: cyan;
+}
+
 .selected {
     background-color: yellow;
 }
