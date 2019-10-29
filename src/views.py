@@ -10,7 +10,7 @@ from src import *
 from src.models.square.square import Square
 
 
-date = '9-07-2019'
+date = '1-10-2019'
 puzzle = None
 room = 'default'
 
@@ -62,7 +62,6 @@ def on_keypress(data):
 def on_check(data):
     correct = []
     for entry in data:
-        if puzzle[int(entry['row'])][int(entry['col'])].answer == entry['letter']:
+        if puzzle[int(entry['row'])][int(entry['col'])].answer == entry['letter'].upper():
             correct.append({'row': entry['row'], 'col': entry['col']})
-    print(correct)
     emit('check', json.dumps(correct), room=room)

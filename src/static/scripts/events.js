@@ -118,12 +118,50 @@ $(document).ready(function() {
                     letterDiv.addEventListener('keydown', function(e) {
                         let key = e.keyCode;
                         if (key == 8) {
-                            letterDiv.innerHTML = '';
-                            socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': ''});
+                            if (letterDiv.innerHTML !== '') {
+                                letterDiv.innerHTML = '';
+                                socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': ''});
+                            }
+                            else {
+                                if (isAcross) {
+                                    setDir(true, i, j);
+                                    if (j <= 0) {
+                                        return;
+                                    }
+                                    for (let k = j - 1; k >= 0; k--) {
+                                        if (row[k].classList.contains('black-square') || row[k].childNodes[1].classList.contains('correct')) {
+                                            continue;
+                                        }
+                                        else {
+                                            row[k].childNodes[1].focus();
+                                            return;
+                                        }
+                                    }
+                                }
+                                else {
+                                    setDir(false, i, j);
+                                    if (i <= 0) {
+                                        return;
+                                    }
+                                    for (let k = i - 1; k >= 0; k--) {
+                                        if (squares[k][j].classList.contains('black-square') || squares[k][j].childNodes[1].classList.contains('correct')) {
+                                            continue;
+                                        }
+                                        else {
+                                            squares[k][j].childNodes[1].focus();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
                         }
                         if (key === 37) {
                             // left arrow
+                            let wasAcross = isAcross;
                             setDir(true, i, j);
+                            if (!wasAcross) {
+                                return;
+                            }
                             if (j <= 0) {
                                 return;
                             }
@@ -139,7 +177,11 @@ $(document).ready(function() {
                         }
                         else if (key === 38) {
                             // up arrow
+                            let wasAcross = isAcross;
                             setDir(false, i, j);
+                            if (wasAcross) {
+                                return;
+                            }
                             if (i <= 0) {
                                 return;
                             }
@@ -155,7 +197,11 @@ $(document).ready(function() {
                         }
                         else if (key === 39) {
                             // right arrow
+                            let wasAcross = isAcross;
                             setDir(true, i, j);
+                            if (!wasAcross) {
+                                return;
+                            }
                             if (j >= parsedData.length - 1) {
                                 return;
                             }
@@ -171,7 +217,11 @@ $(document).ready(function() {
                         }
                         else if (key === 40) {
                             // down arrow
+                            let wasAcross = isAcross;
                             setDir(false, i, j);
+                            if (wasAcross) {
+                                return;
+                            }
                             if (i >= parsedData.length - 1) {
                                 return;
                             }

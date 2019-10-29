@@ -38,9 +38,10 @@ table, th, td {
 }
 
 .letter {
-    height: 20px;
-    font-size: 18px;
+    height: 24px;
+    font-size: 24px;
     font-weight: bold;
+    text-transform: uppercase;
 }
 
 .black-square {
