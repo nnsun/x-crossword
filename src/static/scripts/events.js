@@ -1,31 +1,33 @@
 let isAcross = true;
 let squares = [];
+let numRows = 15;
+let numCols = 15;
 
 function setDir(dir, row, col) {
     // dir = true => across, down otherwise
     isAcross = dir
-    for (let i = 0; i < squares.length; i++ ) {
-        for (let j = 0; j < squares[i].length; j++) {
+    for (let i = 0; i < numRows; i++ ) {
+        for (let j = 0; j < numCols; j++) {
             squares[i][j].classList.remove('selected-group');
         }
     }
 
-    for (let i = 0; i < squares.length; i++) {
-        let square = squares[row][i];
-        if (!square.classList.contains('black-square')) {
-            if (dir) {
-                squares[row][i].classList.add('selected-group');
-            }
-        }
-
-        square = squares[i][col]
-        if (!square.classList.contains('black-square')) {
-            if (!dir) {
-                squares[i][col].classList.add('selected-group');
+    if (dir) {
+        for (let i = 0; i < numCols; i++) {
+            let square = squares[row][i];
+            if (!square.classList.contains('black-square')) {
+                square.classList.add('selected-group');
             }
         }
     }
-    
+    else {
+        for (let i = 0; i < numRows; i++) {
+            let square = squares[i][col];
+            if (!square.classList.contains('black-square')) {
+                square.classList.add('selected-group');
+            }
+        }
+    }
 }
 
 $(document).ready(function() {
@@ -35,8 +37,8 @@ $(document).ready(function() {
     let button = document.getElementById('check-button');
     button.addEventListener('click', function() {
         let toCheck = []
-        for (let i = 0; i < squares.length; i++) {
-            for (let j = 0; j < squares[i].length; j++) {
+        for (let i = 0; i < numRows; i++) {
+            for (let j = 0; j < numCols; j++) {
                 let square = squares[i][j];
                 if (square.getAttribute('class') !== 'black-square') {
                     let letterDiv = square.childNodes[1];
@@ -59,12 +61,15 @@ $(document).ready(function() {
         let tbody = document.getElementById('crossword');
         let parsedData = JSON.parse(data);
 
-        for (let i = 0; i < parsedData.length; i++) {
+        numRows = parsedData.length;
+        numCols = parsedData[0].length;
+
+        for (let i = 0; i < numRows; i++) {
             let tr = document.createElement('tr');
             tbody.appendChild(tr);
 
             let row = [];
-            for (let j = 0; j < parsedData[i].length; j++) {
+            for (let j = 0; j < numCols; j++) {
                 let square = parsedData[i][j];
                 let td = document.createElement('td');
                 if (square.is_black) {
@@ -85,10 +90,10 @@ $(document).ready(function() {
                         socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': e.data});
                         if (e.data !== '') {
                             if (isAcross) {
-                                if (j >= parsedData.length - 1) {
+                                if (j >= numCols - 1) {
                                     return;
                                 }
-                                for (let k = j + 1; k <= parsedData.length - 1; k++) {
+                                for (let k = j + 1; k <= numCols - 1; k++) {
                                     if (row[k].classList.contains('black-square') || row[k].childNodes[1].classList.contains('correct')) {
                                         continue;
                                     }
@@ -99,10 +104,10 @@ $(document).ready(function() {
                                 }
                             }
                             else {
-                                if (i >= parsedData.length - 1) {
+                                if (i >= numRows - 1) {
                                     return;
                                 }
-                                for (let k = i + 1; k <= parsedData.length - 1; k++) {
+                                for (let k = i + 1; k <= numRows - 1; k++) {
                                     if (squares[k][j].classList.contains('black-square') || squares[k][j].childNodes[1].classList.contains('correct')) {
                                         continue;
                                     }
@@ -202,10 +207,10 @@ $(document).ready(function() {
                             if (!wasAcross) {
                                 return;
                             }
-                            if (j >= parsedData.length - 1) {
+                            if (j >= numCols - 1) {
                                 return;
                             }
-                            for (let k = j + 1; k <= parsedData.length - 1; k++) {
+                            for (let k = j + 1; k <= numCols - 1; k++) {
                                 if (row[k].classList.contains('black-square') || row[k].childNodes[1].classList.contains('correct')) {
                                     continue;
                                 }
@@ -222,10 +227,10 @@ $(document).ready(function() {
                             if (wasAcross) {
                                 return;
                             }
-                            if (i >= parsedData.length - 1) {
+                            if (i >= numRows - 1) {
                                 return;
                             }
-                            for (let k = i + 1; k <= parsedData.length - 1; k++) {
+                            for (let k = i + 1; k <= numRows - 1; k++) {
                                 if (squares[k][j].classList.contains('black-square') || squares[k][j].childNodes[1].classList.contains('correct')) {
                                     continue;
                                 }

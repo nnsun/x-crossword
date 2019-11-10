@@ -55,6 +55,28 @@ table, th, td {
     justify-content: center;
 }
 
+.button {
+    background-color: blue;
+    border: 2px solid white;
+    color: white;
+    padding: 12px;
+    opacity: 0.5;
+    transition-duration: 2s;
+    font-size: 16px
+}
+
+.button:focus {
+    color: white;
+}
+
+.button:active {
+    transition-duration: 0s;
+    font-size: 20px;
+}
+
+.button:hover {
+    opacity: 1
+}
 
 .correct {
     color: blue;
