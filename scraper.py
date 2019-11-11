@@ -44,7 +44,7 @@ def scrape(date):
     analysis = page_bs4.find('div', id='analysis').find('p')
     words = analysis.get_text().split(' ')
     for i in range(len(words)):
-        if words[i] == 'circles':
+        if words[i] == 'circles' or words[i] == 'shaded':
             if words[i-1] != '0':
                 return None
         elif words[i] == 'rebus':

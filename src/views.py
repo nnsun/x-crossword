@@ -10,7 +10,7 @@ from src import *
 from src.models.square.square import Square
 
 
-date = '1-10-2019'
+date = '9-25-2019'
 puzzle = None
 room = 'default'
 
@@ -40,7 +40,6 @@ def index():
 
 @socketio.on('create')
 def on_create():
-    global puzzle
     if puzzle is not None:
         puzzle_json = []
         for row in puzzle:
@@ -55,7 +54,12 @@ def on_create():
 
 @socketio.on('update')
 def on_keypress(data):
-    emit('update', json.dumps(data), room=room)
+    row = int(data['row'])
+    col = int(data['col'])
+    ts = float(data['ts'])
+    if ts > puzzle[row][col].timestamp:
+        emit('update', json.dumps(data), room=room)
+        puzzle[row][col].timestamp = ts
 
 
 @socketio.on('check')

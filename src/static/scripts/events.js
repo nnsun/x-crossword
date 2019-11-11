@@ -1,5 +1,6 @@
 let isAcross = true;
 let squares = [];
+let timestamps = [];
 let numRows = 15;
 let numCols = 15;
 
@@ -59,7 +60,8 @@ function addKeydownListener(letterDiv, i, j, socket) {
             // backspace
             if (letterDiv.innerHTML !== '') {
                 letterDiv.innerHTML = '';
-                socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': ''});
+                timestamps[i][j] = Date.now();
+                socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': '', 'ts': Date.now()});
             }
             else {
                 if (isAcross) {
@@ -187,7 +189,8 @@ function addDoubleClickListener(letterDiv, i, j) {
 
 function addInputListener(letterDiv, i, j, socket) {
     letterDiv.addEventListener('input', function (e) {
-        socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': e.data});
+        timestamps[i][j] = Date.now();
+        socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': e.data, 'ts': Date.now()});
         if (e.data !== '') {
             if (isAcross) {
                 if (j >= numCols - 1) {
@@ -277,7 +280,8 @@ $(document).ready(function() {
             let tr = document.createElement('tr');
             tbody.appendChild(tr);
 
-            let row = [];
+            let boardRow = [];
+            let tsRow = [];
             for (let j = 0; j < numCols; j++) {
                 let square = parsedData[i][j];
                 let td = document.createElement('td');
@@ -300,22 +304,31 @@ $(document).ready(function() {
                     td.appendChild(numDiv);
                     td.appendChild(letterDiv);
                 }
-                row.push(td);
+                boardRow.push(td);
                 tr.appendChild(td);
+                tsRow.push(0);
             }
-            squares.push(row);
+            squares.push(boardRow);
+            timestamps.push(tsRow);
         }
     });
 
 
     socket.on('update', function(data) {
+        if (squares === []) {
+            return;
+        }
         let parsedData = JSON.parse(data);
-        let square = squares[parsedData.row][parsedData.col];
-        square.childNodes[1].innerHTML = parsedData.letter;
+        if (parsedData.ts >= timestamps[parsedData.row][parsedData.col]) {
+            squares[parsedData.row][parsedData.col].childNodes[1].innerHTML = parsedData.letter;
+        }
     });
 
 
     socket.on('check', function(data) {
+        if (squares === []) {
+            return;
+        }
         let parsedData = JSON.parse(data);
         for (let i = 0; i < parsedData.length; i++) {
             let square = squares[parsedData[i].row][parsedData[i].col];
