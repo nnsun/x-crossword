@@ -6,7 +6,8 @@ table {
     border-collapse: collapse;
     background-color: 240 240 240;
     float: left;
-    margin-left: 10%;
+    margin-left: 5%;
+    margin-top: 50px;
 }
 
 td {
@@ -26,7 +27,13 @@ table, th, td {
   
 .clue-col {
     flex: 50%;
-    padding: 10px;
+    padding: 0px 20px 20px 20px;
+}
+
+.clue-div {
+    padding: 1px;
+    font-size: 14px;
+    display: inline-block;
 }
 
 .num {

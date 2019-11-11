@@ -23,13 +23,17 @@
       <div class='clue-col'>
         <h2>Across</h2>
         {% for num in clues['across'] %}
-          <div>{{num}}. {{clues['across'][num]}}</div>
+          <div>
+            <div class='clue-div' id='{{num}}a'>{{num}}. {{clues['across'][num]}}</div>
+          </div>
         {% endfor %}
       </div>
       <div class='clue-col'>
         <h2>Down</h2>
         {% for num in clues['down'] %}
-          <div>{{num}}. {{clues['down'][num]}}</div>
+          <div>
+            <div class='clue-div' id='{{num}}d'>{{num}}. {{clues['down'][num]}}</div>
+          </div>
         {% endfor %}
       </div>
     </div>
