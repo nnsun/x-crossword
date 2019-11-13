@@ -33,23 +33,35 @@ function setDir(dir, row, col) {
 }
 
 
-function getClueId(row, col) {
+function highlightClue(document, square, row, col) {
+    let highlighted = document.getElementsByClassName('highlighted-clue');
+    for (let i = 0; i < highlighted.length; i++) {
+        highlighted[i].classList.remove('highlighted-clue');
+    }
+
     if (isAcross) {
         let i = col;
-        let square;
-        while (square.childNodes[0].innerHTML === '') {
-            square = squares[row][i];
+        while (i > 0 && !square.classList.contains('black-square')) {
             i--;
+            square = squares[row][i];
+        }
+        if (square.classList.contains('black-square')) {
+            square = squares[row][i+1];
         }
     }
     else {
         let i = row;
-        while (square.childNodes[0].innerHTML === '') {
-            square = squares[i][col];
+        while (i > 0 && !square.classList.contains('black-square')) {
             i--;
+            square = squares[i][col];
+        }
+        if (square.classList.contains('black-square')) {
+            square = squares[i+1][col];
         }
     }
-    return square.childNodes[0].innerHTML;
+    let dir = isAcross ? 'a' : 'd';
+    console.log(square.childNodes[0].innerHTML + dir);
+    document.getElementById(square.childNodes[0].innerHTML + dir).classList.add('highlighted-clue');
 }
 
 
@@ -225,7 +237,7 @@ function addInputListener(letterDiv, i, j, socket) {
 }
 
 
-function addEventListeners(letterDiv, td, i, j, socket) {
+function addEventListeners(document, letterDiv, td, i, j, socket) {
     addInputListener(letterDiv, i, j, socket);
 
     addKeydownListener(letterDiv, i, j, socket);
@@ -235,10 +247,12 @@ function addEventListeners(letterDiv, td, i, j, socket) {
     letterDiv.addEventListener('focus', function () {
         setDir(isAcross, i, j);
         td.classList.add('selected');
+        highlightClue(document, letterDiv.parentNode, i, j);
     });
 
     letterDiv.addEventListener('blur', function () {
         td.classList.remove('selected');
+        highlightClue(document, letterDiv.parentNode, i, j);
     });
 }
 
@@ -299,7 +313,7 @@ $(document).ready(function() {
                     letterDiv.setAttribute('data-col', j);
                     letterDiv.setAttribute('contenteditable', true);
 
-                    addEventListeners(letterDiv, td, i, j, socket);
+                    addEventListeners(document, letterDiv, td, i, j, socket);
 
                     td.appendChild(numDiv);
                     td.appendChild(letterDiv);

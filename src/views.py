@@ -35,7 +35,7 @@ def index():
     with open('crosswords/' + date + '/clues.json', 'r') as f:
         clues = json.load(f)
 
-    return render_template('index.html', board=puzzle, clues=clues)
+    return render_template('index.html', clues=clues)
 
 
 @socketio.on('create')
