@@ -8,7 +8,7 @@ import requests
 
 
 def main():
-    d = datetime.date(2019, 1, 6)
+    d = datetime.date(2019, 3, 6)
     day_mapping = {
         'Sunday': [],
         'Monday': [],

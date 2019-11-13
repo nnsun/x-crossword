@@ -5,7 +5,7 @@ let numRows = 15;
 let numCols = 15;
 
 
-function setDir(dir, row, col) {
+function setDir(document, dir, row, col) {
     // dir = true => across, down otherwise
     isAcross = dir
     for (let i = 0; i < numRows; i++ ) {
@@ -30,6 +30,7 @@ function setDir(dir, row, col) {
             }
         }
     }
+    highlightClue(document, squares[row][col], row, col)
 }
 
 
@@ -60,7 +61,6 @@ function highlightClue(document, square, row, col) {
         }
     }
     let dir = isAcross ? 'a' : 'd';
-    console.log(square.childNodes[0].innerHTML + dir);
     document.getElementById(square.childNodes[0].innerHTML + dir).classList.add('highlighted-clue');
 }
 
@@ -77,7 +77,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
             }
             else {
                 if (isAcross) {
-                    setDir(true, i, j);
+                    setDir(document, true, i, j);
                     if (j <= 0) {
                         return;
                     }
@@ -92,7 +92,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
                     }
                 }
                 else {
-                    setDir(false, i, j);
+                    setDir(document, false, i, j);
                     if (i <= 0) {
                         return;
                     }
@@ -111,7 +111,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
         if (key === 37) {
             // left arrow
             let wasAcross = isAcross;
-            setDir(true, i, j);
+            setDir(document, true, i, j);
             if (!wasAcross) {
                 return;
             }
@@ -131,7 +131,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
         else if (key === 38) {
             // up arrow
             let wasAcross = isAcross;
-            setDir(false, i, j);
+            setDir(document, false, i, j);
             if (wasAcross) {
                 return;
             }
@@ -151,7 +151,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
         else if (key === 39) {
             // right arrow
             let wasAcross = isAcross;
-            setDir(true, i, j);
+            setDir(document, true, i, j);
             if (!wasAcross) {
                 return;
             }
@@ -171,7 +171,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
         else if (key === 40) {
             // down arrow
             let wasAcross = isAcross;
-            setDir(false, i, j);
+            setDir(document, false, i, j);
             if (wasAcross) {
                 return;
             }
@@ -194,7 +194,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
 
 function addDoubleClickListener(letterDiv, i, j) {
     letterDiv.addEventListener('dblclick', function(e) {
-        setDir(!isAcross, i, j);
+        setDir(document, !isAcross, i, j);
     });
 }
 
@@ -245,14 +245,12 @@ function addEventListeners(document, letterDiv, td, i, j, socket) {
     addDoubleClickListener(letterDiv, i, j);
 
     letterDiv.addEventListener('focus', function () {
-        setDir(isAcross, i, j);
+        setDir(document, isAcross, i, j);
         td.classList.add('selected');
-        highlightClue(document, letterDiv.parentNode, i, j);
     });
 
     letterDiv.addEventListener('blur', function () {
         td.classList.remove('selected');
-        highlightClue(document, letterDiv.parentNode, i, j);
     });
 }
 
