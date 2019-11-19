@@ -14,20 +14,22 @@ function setDir(document, dir, row, col) {
         }
     }
 
-    if (dir) {
-        for (let i = 0; i < numCols; i++) {
-            let square = squares[row][i];
-            if (!square.classList.contains('black-square')) {
-                square.classList.add('selected-group');
-            }
+    if (isAcross) {
+        for (let i = col; i < numCols && !squares[row][i].classList.contains('black-square'); i++) {
+            squares[row][i].classList.add('selected-group');
         }
+        for (let i = col-1; i >= 0 && !squares[row][i].classList.contains('black-square'); i--) {
+            squares[row][i].classList.add('selected-group');
+        }
+
+
     }
     else {
-        for (let i = 0; i < numRows; i++) {
-            let square = squares[i][col];
-            if (!square.classList.contains('black-square')) {
-                square.classList.add('selected-group');
-            }
+        for (let i = row; i < numRows && !squares[i][col].classList.contains('black-square'); i++) {
+            squares[i][col].classList.add('selected-group');
+        }
+        for (let i = row-1; i >= 0 && !squares[i][col].classList.contains('black-square'); i--) {
+            squares[i][col].classList.add('selected-group');
         }
     }
     highlightClue(document, squares[row][col], row, col)
@@ -237,11 +239,9 @@ function addInputListener(letterDiv, i, j, socket) {
 }
 
 
-function addEventListeners(document, letterDiv, td, i, j, socket) {
+function addLetterBoxEventListeners(document, letterDiv, td, i, j, socket) {
     addInputListener(letterDiv, i, j, socket);
-
     addKeydownListener(letterDiv, i, j, socket);
-
     addDoubleClickListener(letterDiv, i, j);
 
     letterDiv.addEventListener('focus', function () {
@@ -255,9 +255,7 @@ function addEventListeners(document, letterDiv, td, i, j, socket) {
 }
 
 
-$(document).ready(function() {
-    let socket = io.connect('http://' + document.domain + ':' + location.port);
-
+function addButtonEventListener(socket) {
     let button = document.getElementById('check-button');
     button.addEventListener('click', function() {
         let toCheck = []
@@ -272,14 +270,36 @@ $(document).ready(function() {
                 }
             }
         }
-
         socket.emit('check', toCheck);
     });
+}
+
+
+function addClueBoxEventListeners(document) {
+    let boxes = document.getElementsByClassName('clue-box');
+    for (let i = 0; i < boxes.length; i++) {
+        let box = boxes[i];
+        let id = box.id.split('-')[0];
+        let dir = id.slice(id.length-1, id.length);
+        let square = document.getElementById(id.slice(0, id.length-1));
+        let row = square.parentNode.getAttribute('data-row');
+        let col = square.parentNode.getAttribute('data-col');
+        box.addEventListener('click', function() {
+            setDir(document, dir === 'a' ? true : false, row, col);
+            squares[row][col].childNodes[1].focus();
+        });
+    }
+}
+
+
+$(document).ready(function() {
+    let socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    addButtonEventListener(socket);
 
     socket.on('connect', function(data) {
         socket.emit('create');
     });
-
 
     socket.on('board', function(data) {
         let tbody = document.getElementById('crossword');
@@ -297,12 +317,15 @@ $(document).ready(function() {
             for (let j = 0; j < numCols; j++) {
                 let square = parsedData[i][j];
                 let td = document.createElement('td');
+                td.setAttribute('data-row', i);
+                td.setAttribute('data-col', j);
                 if (square.is_black) {
                     td.setAttribute('class', 'black-square');
                 }
                 else {
                     let numDiv = document.createElement('div');
                     numDiv.setAttribute('class', 'num');
+                    numDiv.id = square.num;
                     numDiv.innerHTML = square.num;
 
                     let letterDiv = document.createElement('div');
@@ -311,7 +334,7 @@ $(document).ready(function() {
                     letterDiv.setAttribute('data-col', j);
                     letterDiv.setAttribute('contenteditable', true);
 
-                    addEventListeners(document, letterDiv, td, i, j, socket);
+                    addLetterBoxEventListeners(document, letterDiv, td, i, j, socket);
 
                     td.appendChild(numDiv);
                     td.appendChild(letterDiv);
@@ -323,6 +346,7 @@ $(document).ready(function() {
             squares.push(boardRow);
             timestamps.push(tsRow);
         }
+        addClueBoxEventListeners(document);
     });
 
 
@@ -347,6 +371,6 @@ $(document).ready(function() {
             square.childNodes[1].classList.add('correct')
             square.childNodes[1].setAttribute('contenteditable', false);
         }
-    })
+    });
 
  });
