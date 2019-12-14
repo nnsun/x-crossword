@@ -8,7 +8,7 @@ import requests
 
 
 def main():
-    d = datetime.date(2019, 3, 6)
+    d = datetime.date(2019, 1, 6)
     day_mapping = {
         'Sunday': [],
         'Monday': [],
@@ -35,27 +35,29 @@ def main():
 
 
 def scrape(date):
-    crossword_page = 'https://www.xwordinfo.com/Crossword?date=' + date
-    page_request = requests.get(crossword_page)
-    page_request.raise_for_status()
-
-    page_bs4 = bs4.BeautifulSoup(page_request.text, 'html.parser')
-    
-    analysis = page_bs4.find('div', id='analysis').find('p')
-    words = analysis.get_text().split(' ')
-    for i in range(len(words)):
-        if words[i] == 'circles' or words[i] == 'shaded':
-            if words[i-1] != '0':
-                return None
-        elif words[i] == 'rebus':
-            if words[i-1] != '0':
-                return None
-
-    date = date.replace('/', '-')
     try:
+        crossword_page = 'https://www.xwordinfo.com/Crossword?date=' + date
+        page_request = requests.get(crossword_page)
+        page_request.raise_for_status()
+
+        page_bs4 = bs4.BeautifulSoup(page_request.text, 'html.parser')
+        
+        analysis = page_bs4.find('div', id='analysis').find('p')
+        words = analysis.get_text().split(' ')
+        for i in range(len(words)):
+            if words[i] == 'circles' or words[i] == 'shaded':
+                if words[i-1] != '0':
+                    return None
+            elif words[i] == 'rebus':
+                if words[i-1] != '0':
+                    return None
+
+        date = date.replace('/', '-')
         os.mkdir('crosswords/' + date)
+    except KeyboardInterrupt as e:
+        raise e
     except:
-        pass
+        return None
     
     title = page_bs4.find('title')
     day = title.string.split(',', 1)[0].strip()

@@ -1,3 +1,5 @@
+"use strict";
+
 let isAcross = true;
 let squares = [];
 let timestamps = [];
@@ -280,19 +282,19 @@ function addClueBoxEventListeners(document) {
     for (let i = 0; i < boxes.length; i++) {
         let box = boxes[i];
         let id = box.id.split('-')[0];
-        let dir = id.slice(id.length-1, id.length);
+        let dir = id.slice(id.length-1, id.length) === 'a' ? true : false;
         let square = document.getElementById(id.slice(0, id.length-1));
         let row = square.parentNode.getAttribute('data-row');
         let col = square.parentNode.getAttribute('data-col');
         box.addEventListener('click', function() {
-            setDir(document, dir === 'a' ? true : false, row, col);
+            setDir(document, dir, row, col);
             squares[row][col].childNodes[1].focus();
         });
     }
 }
 
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function(e) {
     let socket = io.connect('http://' + document.domain + ':' + location.port);
 
     addButtonEventListener(socket);
