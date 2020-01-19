@@ -1,37 +1,30 @@
 import csv
 import datetime
 import json
-import os
 
 import bs4
 import requests
+import pymongo
+
+
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+db = client.xCrosswordDB
+puzzles = db.puzzles
 
 
 def main():
-    d = datetime.date(2019, 1, 6)
-    day_mapping = {
-        'Sunday': [],
-        'Monday': [],
-        'Tuesday': [],
-        'Wednesday': [],
-        'Thursday': [],
-        'Friday': [],
-        'Saturday': []
-    }
+    puzzles.create_index('day')
+    puzzles.create_index('date', unique=True)
+
+    d = datetime.date(2020, 1, 1)
     while d < datetime.date.today():
         day_str = str(d.day)
         if d.day < 10:
             day_str = '0' + str(d.day)
         month = d.month
         date_str = str(d.month) + '/' + day_str + '/' + str(d.year)
-        day_of_week = scrape(date_str)
+        scrape(date_str)
         d += datetime.timedelta(days=1)
-        if day_of_week is None:
-            continue
-        day_mapping[day_of_week].append(date_str)
-        
-    with open('day_mapping.json', 'w') as f:
-        json.dump(day_mapping, f)
 
 
 def scrape(date):
@@ -41,59 +34,50 @@ def scrape(date):
         page_request.raise_for_status()
 
         page_bs4 = bs4.BeautifulSoup(page_request.text, 'html.parser')
-        
+
         analysis = page_bs4.find('div', id='analysis').find('p')
         words = analysis.get_text().split(' ')
         for i in range(len(words)):
-            if words[i] == 'circles' or words[i] == 'shaded':
+            if 'circles' in words[i] or 'shaded' in words[i]:
                 if words[i-1] != '0':
-                    return None
+                    return
             elif words[i] == 'rebus':
                 if words[i-1] != '0':
-                    return None
+                    return
 
         date = date.replace('/', '-')
-        os.mkdir('crosswords/' + date)
-    except KeyboardInterrupt as e:
-        raise e
-    except:
-        return None
-    
-    title = page_bs4.find('title')
-    day = title.string.split(',', 1)[0].strip()
-    with open('crosswords/' + date + '/day.txt', 'w') as f:
-        f.write(day)
 
-    table_id = 'PuzTable'
-    table = page_bs4.find('table', id=table_id)
+        title = page_bs4.find('title')
+        day = title.string.split(',', 1)[0].strip()
 
-    board = []
-    for row in table.children:
-        if type(row) == bs4.element.Tag:
-            board_row = []
-            for col in row.children:
-                if type(col) == bs4.element.Tag:
-                    if 'class' in col.attrs:
-                        board_row.append(None)
-                    else:
-                        l = list(col.children)
-                        num = l[0].string
-                        if num is None:
-                            board_row.append(l[1].string)
+        table_id = 'PuzTable'
+        table = page_bs4.find('table', id=table_id)
+
+        board = []
+        for row in table.children:
+            if type(row) == bs4.element.Tag:
+                board_row = []
+                for col in row.children:
+                    if type(col) == bs4.element.Tag:
+                        if 'class' in col.attrs:
+                            board_row.append(None)
                         else:
-                            board_row.append((l[1].string, num))
-            board.append(board_row)
-    with open('crosswords/' + date + '/board.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerows(board)
-
-    clues = parse_clues(page_bs4)
-    with open('crosswords/' + date + '/clues.json', 'w') as f:
-        json.dump(clues, f)
+                            l = list(col.children)
+                            num = l[0].string
+                            if num is None:
+                                board_row.append(l[1].string)
+                            else:
+                                board_row.append((l[1].string, num))
+                board.append(board_row)
+        
+        puzzle = {'day': day, 'date': date, 'board': board, 'clues': parse_clues(page_bs4)}
+        puzzles.insert_one(puzzle)
+        print(date)
+    except Exception as e:
+        print(e)
+        return
     
-    return day
 
-    
 def parse_clues(page_bs4):
     clues_classes = page_bs4.find_all('div', class_='numclue')
     clues = []
@@ -115,4 +99,7 @@ def parse_clues(page_bs4):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

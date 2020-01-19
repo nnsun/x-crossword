@@ -2,11 +2,12 @@ import json
 
 from flask import Flask
 from flask_socketio import SocketIO, join_room, emit, send
+from flask_pymongo import PyMongo
 
 app = Flask(__name__, static_folder='static')
+app.config["MONGO_URI"] = "mongodb://localhost:27017/xCrosswordDB"
+mongo = PyMongo(app)
+puzzles = mongo.db.puzzles
 socketio = SocketIO(app)
-
-with open('day_mapping.json', 'r') as f:
-    day_mapping = json.load(f)
 
 import src.views

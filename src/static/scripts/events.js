@@ -284,6 +284,9 @@ function addClueBoxEventListeners(document) {
         let id = box.id.split('-')[0];
         let dir = id.slice(id.length-1, id.length) === 'a' ? true : false;
         let square = document.getElementById(id.slice(0, id.length-1));
+        if (square === null) {
+            console.log(box)
+        }
         let row = square.parentNode.getAttribute('data-row');
         let col = square.parentNode.getAttribute('data-col');
         box.addEventListener('click', function() {
