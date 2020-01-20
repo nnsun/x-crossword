@@ -1,17 +1,16 @@
+import json
 import time
 
 
-class Square(object):
-    def __init__(self, answer, num=''):
-        self.is_black = not bool(answer)
-        self.num = num
-        self.answer = answer
-        self.check = 0
-        self.guess = None
-        self.timestamp = 0
-
-    def initial(self):
-        d = {}
-        d['is_black'] = self.is_black
-        d['num'] = self.num
-        return d
+def initial(date, row, col, answer, num=''):
+    d = {}
+    d['date'] = date
+    d['row'] = row
+    d['col'] = col
+    d['is_black'] = not bool(answer)
+    d['num'] = num
+    d['answer'] = answer
+    d['checked'] = False
+    d['letter'] = None
+    d['timestamp'] = 0
+    return d

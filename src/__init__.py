@@ -7,7 +7,6 @@ from flask_pymongo import PyMongo
 app = Flask(__name__, static_folder='static')
 app.config["MONGO_URI"] = "mongodb://localhost:27017/xCrosswordDB"
 mongo = PyMongo(app)
-puzzles = mongo.db.puzzles
 socketio = SocketIO(app)
 
 import src.views

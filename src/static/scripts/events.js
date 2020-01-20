@@ -284,9 +284,6 @@ function addClueBoxEventListeners(document) {
         let id = box.id.split('-')[0];
         let dir = id.slice(id.length-1, id.length) === 'a' ? true : false;
         let square = document.getElementById(id.slice(0, id.length-1));
-        if (square === null) {
-            console.log(box)
-        }
         let row = square.parentNode.getAttribute('data-row');
         let col = square.parentNode.getAttribute('data-col');
         box.addEventListener('click', function() {
@@ -307,6 +304,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     });
 
     socket.on('board', function(data) {
+        
         let tbody = document.getElementById('crossword');
         let parsedData = JSON.parse(data);
 
@@ -338,6 +336,12 @@ document.addEventListener("DOMContentLoaded", function(e) {
                     letterDiv.setAttribute('data-row', i);
                     letterDiv.setAttribute('data-col', j);
                     letterDiv.setAttribute('contenteditable', true);
+                    letterDiv.innerHTML = square.letter
+                    
+                    if (square.checked) {
+                        letterDiv.classList.add('correct')
+                        letterDiv.setAttribute('contenteditable', false);
+                    }
 
                     addLetterBoxEventListeners(document, letterDiv, td, i, j, socket);
 
