@@ -23,8 +23,6 @@ function setDir(document, dir, row, col) {
         for (let i = col-1; i >= 0 && !squares[row][i].classList.contains('black-square'); i--) {
             squares[row][i].classList.add('selected-group');
         }
-
-
     }
     else {
         for (let i = row; i < numRows && !squares[i][col].classList.contains('black-square'); i++) {
@@ -197,7 +195,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
 
 
 function addDoubleClickListener(letterDiv, i, j) {
-    letterDiv.addEventListener('dblclick', function(e) {
+    letterDiv.addEventListener('dblclick', function() {
         setDir(document, !isAcross, i, j);
     });
 }
@@ -241,7 +239,7 @@ function addInputListener(letterDiv, i, j, socket) {
 }
 
 
-function addLetterBoxEventListeners(document, letterDiv, td, i, j, socket) {
+function addLetterBoxEventListeners(document, letterDiv, numDiv, td, i, j, socket) {
     addInputListener(letterDiv, i, j, socket);
     addKeydownListener(letterDiv, i, j, socket);
     addDoubleClickListener(letterDiv, i, j);
@@ -254,7 +252,26 @@ function addLetterBoxEventListeners(document, letterDiv, td, i, j, socket) {
     letterDiv.addEventListener('blur', function () {
         td.classList.remove('selected');
     });
+
+    numDiv.addEventListener('focus', function () {
+        setDir(document, isAcross, i, j);
+        td.classList.add('selected');
+        letterDiv.focus()
+    });
+
+    numDiv.addEventListener('blur', function () {
+        td.classList.remove('selected');
+    });
+
+    numDiv.addEventListener('dblclick', function() {
+        let dblclick = document.createEvent('MouseEvents');
+        dblclick.initEvent('dblclick', true, true);
+        letterDiv.dispatchEvent(dblclick);
+    });
+
 }
+
+
 
 
 function addButtonEventListener(socket) {
@@ -328,6 +345,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                 else {
                     let numDiv = document.createElement('div');
                     numDiv.setAttribute('class', 'num');
+                    numDiv.setAttribute('contenteditable', true);
                     numDiv.id = square.num;
                     numDiv.innerHTML = square.num;
 
@@ -343,10 +361,10 @@ document.addEventListener("DOMContentLoaded", function(e) {
                         letterDiv.setAttribute('contenteditable', false);
                     }
 
-                    addLetterBoxEventListeners(document, letterDiv, td, i, j, socket);
-
                     td.appendChild(numDiv);
                     td.appendChild(letterDiv);
+
+                    addLetterBoxEventListeners(document, letterDiv, numDiv, td, i, j, socket);
                 }
                 boardRow.push(td);
                 tr.appendChild(td);

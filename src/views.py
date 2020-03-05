@@ -12,7 +12,7 @@ from src.models.square.square import initial
 
 puzzles = mongo.db.puzzles
 squares = mongo.db.squares
-date = '1-07-2020'
+date = '1-16-2020'
 room = 'default'
 
 @app.route('/')
@@ -36,7 +36,6 @@ def index():
         board.append(board_row)
 
     return render_template('index.html', clues=puzzle['clues'])
-
 
 @socketio.on('create')
 def on_create():
