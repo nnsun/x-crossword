@@ -67,7 +67,7 @@ function highlightClue(document, square, row, col) {
 }
 
 
-function addKeydownListener(letterDiv, i, j, socket) {
+function addKeydownListener(document, letterDiv, i, j, socket) {
     letterDiv.addEventListener('keydown', function(e) {
         let key = e.keyCode;
         if (key == 8) {
@@ -80,9 +80,6 @@ function addKeydownListener(letterDiv, i, j, socket) {
             else {
                 if (isAcross) {
                     setDir(document, true, i, j);
-                    if (j <= 0) {
-                        return;
-                    }
                     for (let k = j - 1; k >= 0; k--) {
                         if (squares[i][k].classList.contains('black-square') || squares[i][k].childNodes[1].classList.contains('correct')) {
                             continue;
@@ -95,9 +92,6 @@ function addKeydownListener(letterDiv, i, j, socket) {
                 }
                 else {
                     setDir(document, false, i, j);
-                    if (i <= 0) {
-                        return;
-                    }
                     for (let k = i - 1; k >= 0; k--) {
                         if (squares[k][j].classList.contains('black-square') || squares[k][j].childNodes[1].classList.contains('correct')) {
                             continue;
@@ -117,9 +111,6 @@ function addKeydownListener(letterDiv, i, j, socket) {
             if (!wasAcross) {
                 return;
             }
-            if (j <= 0) {
-                return;
-            }
             for (let k = j - 1; k >= 0; k--) {
                 if (squares[i][k].classList.contains('black-square') || squares[i][k].childNodes[1].classList.contains('correct')) {
                     continue;
@@ -135,9 +126,6 @@ function addKeydownListener(letterDiv, i, j, socket) {
             let wasAcross = isAcross;
             setDir(document, false, i, j);
             if (wasAcross) {
-                return;
-            }
-            if (i <= 0) {
                 return;
             }
             for (let k = i - 1; k >= 0; k--) {
@@ -157,10 +145,7 @@ function addKeydownListener(letterDiv, i, j, socket) {
             if (!wasAcross) {
                 return;
             }
-            if (j >= numCols - 1) {
-                return;
-            }
-            for (let k = j + 1; k <= numCols - 1; k++) {
+            for (let k = j + 1; k < numCols; k++) {
                 if (squares[i][k].classList.contains('black-square') || squares[i][k].childNodes[1].classList.contains('correct')) {
                     continue;
                 }
@@ -177,16 +162,51 @@ function addKeydownListener(letterDiv, i, j, socket) {
             if (wasAcross) {
                 return;
             }
-            if (i >= numRows - 1) {
-                return;
-            }
-            for (let k = i + 1; k <= numRows - 1; k++) {
+            for (let k = i + 1; k < numRows; k++) {
                 if (squares[k][j].classList.contains('black-square') || squares[k][j].childNodes[1].classList.contains('correct')) {
                     continue;
                 }
                 else {
                     squares[k][j].childNodes[1].focus();
                     return;
+                }
+            }
+        }
+        else if (key === 13) {
+            // enter
+            let diffWord = false;
+            if (isAcross) {
+                for (let k = i; k < numRows; k++) {
+                    for (let l = k == i ? j + 1 : 0; l < numCols; l++) {
+                        let square = squares[k][l];
+                        if (!diffWord) {
+                            if (square.classList.contains('black-square')) {
+                                diffWord = true;
+                            }
+                        }
+                        else if (!square.classList.contains('black-square') && square.childNodes[1].innerHTML === '') {
+                            square.childNodes[1].focus();
+                            return;
+                        }
+                    }
+                    diffWord = true;
+                }
+            }
+            else {
+                for (let l = j; l < numCols; l++) {
+                    for (let k = l == j ? i + 1 : 0; k < numRows; k++) {
+                        let square = squares[k][l];
+                        if (!diffWord) {
+                            if (square.classList.contains('black-square')) {
+                                diffWord = true;
+                            }
+                        }
+                        else if (!square.classList.contains('black-square') && square.childNodes[1].innerHTML === '') {
+                            square.childNodes[1].focus();
+                            return;
+                        }
+                    }
+                    diffWord = true;
                 }
             }
         }
@@ -204,8 +224,8 @@ function addDoubleClickListener(letterDiv, i, j) {
 function addInputListener(letterDiv, i, j, socket) {
     letterDiv.addEventListener('input', function (e) {
         timestamps[i][j] = Date.now();
-        socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': e.data, 'ts': Date.now()});
-        if (e.data !== '') {
+        if (e.data !== null && e.data !== '') {
+            socket.emit('update', {'row': letterDiv.getAttribute('data-row'), 'col': letterDiv.getAttribute('data-col'), 'letter': e.data.trim(), 'ts': Date.now()});
             if (isAcross) {
                 if (j >= numCols - 1) {
                     return;
@@ -235,13 +255,16 @@ function addInputListener(letterDiv, i, j, socket) {
                 }
             }
         }
+        else {
+            letterDiv.innerHTML = '';
+        }
     });
 }
 
 
 function addLetterBoxEventListeners(document, letterDiv, numDiv, td, i, j, socket) {
     addInputListener(letterDiv, i, j, socket);
-    addKeydownListener(letterDiv, i, j, socket);
+    addKeydownListener(document, letterDiv, i, j, socket);
     addDoubleClickListener(letterDiv, i, j);
 
     letterDiv.addEventListener('focus', function () {
@@ -321,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     });
 
     socket.on('board', function(data) {
-        
+
         let tbody = document.getElementById('crossword');
         let parsedData = JSON.parse(data);
 
@@ -355,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                     letterDiv.setAttribute('data-col', j);
                     letterDiv.setAttribute('contenteditable', true);
                     letterDiv.innerHTML = square.letter
-                    
+
                     if (square.checked) {
                         letterDiv.classList.add('correct')
                         letterDiv.setAttribute('contenteditable', false);
