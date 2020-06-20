@@ -12,7 +12,7 @@ from src.models.square.square import initial
 
 puzzles = mongo.db.puzzles
 squares = mongo.db.squares
-date = '1-16-2020'
+date = '3-10-2020'
 room = 'default'
 
 @app.route('/')

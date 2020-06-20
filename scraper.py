@@ -1,6 +1,7 @@
 import csv
 import datetime
 import json
+import sys
 
 import bs4
 import requests
@@ -12,19 +13,20 @@ db = client.xCrosswordDB
 puzzles = db.puzzles
 
 
-def main():
+def main(start, end):
     puzzles.create_index('day')
     puzzles.create_index('date', unique=True)
 
-    d = datetime.date(2020, 1, 1)
-    while d < datetime.date.today():
-        day_str = str(d.day)
-        if d.day < 10:
-            day_str = '0' + str(d.day)
-        month = d.month
-        date_str = str(d.month) + '/' + day_str + '/' + str(d.year)
+    start_split = start.split('/')
+    start_date = datetime.date(int(start_split[2]), int(start_split[0]), int(start_split[1]))
+
+    end_split = end.split('/')
+    end_date = datetime.date(int(end_split[2]), int(end_split[0]), int(end_split[1]))
+
+    while start_date < end_date:
+        date_str = "{}/{}/{}".format(start_date.month, start_date.day, start_date.year)
         scrape(date_str)
-        d += datetime.timedelta(days=1)
+        start_date += datetime.timedelta(days=1)
 
 
 def scrape(date):
@@ -99,7 +101,10 @@ def parse_clues(page_bs4):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        sys.exit('Usage: python3 scraper.py <start date in m/d/yyyy> <end date in m/d/yyyy>')
+
     try:
-        main()
+        main(sys.argv[1], sys.argv[2])
     except KeyboardInterrupt:
         pass
