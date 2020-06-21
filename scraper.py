@@ -24,7 +24,7 @@ def main(start, end):
     end_date = datetime.date(int(end_split[2]), int(end_split[0]), int(end_split[1]))
 
     while start_date < end_date:
-        date_str = "{}/{}/{}".format(start_date.month, start_date.day, start_date.year)
+        date_str = start_date.strftime("%m/%d/%Y")
         scrape(date_str)
         start_date += datetime.timedelta(days=1)
 

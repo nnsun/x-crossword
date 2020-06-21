@@ -2,7 +2,7 @@ import csv
 import json
 import sqlite3
 
-from flask import render_template, request, session, redirect, url_for, flash
+from flask import render_template, request, session, redirect, url_for, jsonify
 import pymongo
 import requests
 
@@ -12,11 +12,11 @@ from src.models.square.square import initial
 
 puzzles = mongo.db.puzzles
 squares = mongo.db.squares
-date = '3-10-2020'
 room = 'default'
 
 @app.route('/')
 def index():
+    date = app.config['DATE']
     puzzle = puzzles.find_one({'date': date})
 
     board = []
@@ -37,8 +37,10 @@ def index():
 
     return render_template('index.html', clues=puzzle['clues'])
 
+
 @socketio.on('create')
 def on_create():
+    date = app.config['DATE']
     board_squares = squares.find({'date': date}, projection={'_id': False}, sort=[('row', pymongo.ASCENDING), ('col', pymongo.ASCENDING)])
     board = []
     row = []
@@ -55,6 +57,7 @@ def on_create():
 
 @socketio.on('update')
 def on_keypress(data):
+    date = app.config['DATE']
     row = int(data['row'])
     col = int(data['col'])
     ts = float(data['ts'])
@@ -67,6 +70,7 @@ def on_keypress(data):
 
 @socketio.on('check')
 def on_check(data):
+    date = app.config['DATE']
     correct = []
     for entry in data:
         row = int(entry['row'])
