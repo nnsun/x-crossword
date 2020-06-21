@@ -47,8 +47,6 @@ def scrape(date):
                 if words[i-1] != '0':
                     return
 
-        date = date.replace('/', '-')
-
         title = page_bs4.find('title')
         day = title.string.split(',', 1)[0].strip()
 
@@ -102,7 +100,7 @@ def parse_clues(page_bs4):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        sys.exit('Usage: python3 scraper.py <start date in m/d/yyyy> <end date in m/d/yyyy>')
+        sys.exit('Usage: `python3 scraper.py <start date in m/d/yyyy> <end date in m/d/yyyy>`')
 
     try:
         main(sys.argv[1], sys.argv[2])

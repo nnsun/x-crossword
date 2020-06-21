@@ -1,13 +1,14 @@
 import sys
 
-from src import app, socketio
+from src.app import app, socketio, init_date
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        sys.exit('Usage: `python3 runserver.py <date>`')
+        sys.exit('Usage: `python3 runserver.py <date in mm/dd/yyyy>`')
     
     app.config['DATE'] = sys.argv[1]
+    init_date()
 
     if app.config['DEBUG']:
         socketio.run(app, debug=True)

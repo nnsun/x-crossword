@@ -2,21 +2,32 @@ import csv
 import json
 import sqlite3
 
-from flask import render_template, request, session, redirect, url_for, jsonify
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
+from flask_socketio import SocketIO, join_room, emit, send
+from flask_pymongo import PyMongo
 import pymongo
 import requests
 
-from src import *
 from src.models.square.square import initial
 
+app = Flask(__name__, static_folder='static')
+app.config.from_pyfile('../.env')
+mongo = PyMongo(app)
+socketio = SocketIO(app)
 
 puzzles = mongo.db.puzzles
 squares = mongo.db.squares
 room = 'default'
+date = None
+
+
+def init_date():
+    global date
+    date = app.config['DATE']
+
 
 @app.route('/')
 def index():
-    date = app.config['DATE']
     puzzle = puzzles.find_one({'date': date})
 
     board = []
@@ -40,7 +51,6 @@ def index():
 
 @socketio.on('create')
 def on_create():
-    date = app.config['DATE']
     board_squares = squares.find({'date': date}, projection={'_id': False}, sort=[('row', pymongo.ASCENDING), ('col', pymongo.ASCENDING)])
     board = []
     row = []
@@ -57,7 +67,6 @@ def on_create():
 
 @socketio.on('update')
 def on_keypress(data):
-    date = app.config['DATE']
     row = int(data['row'])
     col = int(data['col'])
     ts = float(data['ts'])
@@ -70,7 +79,6 @@ def on_keypress(data):
 
 @socketio.on('check')
 def on_check(data):
-    date = app.config['DATE']
     correct = []
     for entry in data:
         row = int(entry['row'])
