@@ -1,6 +1,10 @@
 # x-crossword
 
-X-Crossword is a crossword that you can fill out with friends! Features include choosing any New York Times puzzle from any date, simultaneous editing, and answer checking.
+X-Crossword is a crossword app that you can play with friends! Every user's board is synced up to each others' changes. 
+
+![Screenshot](docs/screenshot.png?raw=true "Screenshot")
+
+X-Crossword uses [XWord Info](https://www.xwordinfo.com/) to scrape daily New York Times crossword puzzle data. 
 
 ## Architecture
 
