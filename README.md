@@ -1,6 +1,8 @@
 # x-crossword
 
-X-Crossword is a crossword app that you can play with friends! Every user's board is synced up to each others' changes. 
+X-Crossword is a crossword app that you can play with friends! Every player's board is synced up to each others' changes. 
+
+Answers can be checked at any point, and doing so will mark correct answers in blue for all players. 
 
 ![Screenshot](docs/screenshot.png?raw=true "Screenshot")
 
